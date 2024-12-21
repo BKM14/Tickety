@@ -4,24 +4,27 @@ import { useDisclosure } from '@mantine/hooks';
 import classes from './HeaderSimple.module.css';
 
 export interface HeaderProps  {
-    link: string,
-    label: string,
-    onClick?: () => void
+    linksArray: {
+      link: string,
+      label: string,
+      onClick?: () => void,
+    }[],
+    isUser: boolean
 }
 
-export function HeaderSimple({ links }: {links: HeaderProps[]}) {
+export function HeaderSimple({ links }: {links: HeaderProps}) {
   const [opened, { toggle }] = useDisclosure(false);
-  const [active, setActive] = useState(links[0].link);
+  const [active, setActive] = useState(links.linksArray[0]);
 
-  const items = links.map((link) => (
+  const items = links.linksArray.map((link) => (
     <a
       key={link.label}
       href={link.link}
       className={classes.link}
-      data-active={active === link.link || undefined}
+      data-active={active === link || undefined}
       onClick={  link.onClick ? link.onClick : (event) => {
         event.preventDefault();
-        setActive(link.link);
+        setActive(link);
       }}
     >
       {link.label}

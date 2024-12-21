@@ -1,10 +1,9 @@
-import CreateForm from "../packages/components/CreateForm";
-import { HeaderSimple } from "../packages/components/HeaderSimple";
 import { HeaderProps } from "../packages/components/HeaderSimple";
 import { FormProps } from "../packages/components/CreateForm";
-import { Modal, Button } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { useState } from "react";
-import CreateTable, { Issue } from "../packages/components/CreateTable";
+import { Issue } from "../packages/components/CreateTable";
+import Dashboard from "../packages/components/Dashbord";
 
 const UserDash = () => {
 
@@ -102,12 +101,16 @@ const UserDash = () => {
       ];
       
 
-    const [modalOpened, setModalOpened] = useState(false);
+    const [, setModalOpened] = useState(false);
     const [tableElements, setTableElements] = useState<Issue[]>([]);
 
-    const links: HeaderProps[] = [
-        { link: "#", label: "Create Ticket", onClick: () => setModalOpened(true) },
-    ];
+    const links: HeaderProps = {
+      linksArray: [
+        { link: "#", label: "Create Ticket", onClick: () => setModalOpened(true)}
+      ],
+      isUser: true
+    }
+    ;
 
     const props: FormProps = {
         inputs: [
@@ -129,23 +132,12 @@ const UserDash = () => {
 
     return (
         <>
-            <HeaderSimple links={links}/>
-            <div style={{textAlign: "center", fontSize: "48px", fontWeight: 600}}>
-                <p>Tickets opened by you</p>
-            </div>
-            <div style={{ width: "50%", margin: "0 auto", textAlign: "center", marginTop: "20px" }}>
-                <Modal
-                    opened={modalOpened}
-                    onClose={() => setModalOpened(false)}
-                    title="Submit a New Ticket"
-                    centered
-                >
-                    <CreateForm props={props}/>
-                </Modal>
-            </div>
-            <div style={{"width": "80%", margin: "0 auto"}}>
-                <CreateTable issues={tableElements}/>
-            </div>
+            <Dashboard DashboardProps={{
+              navLinks: links.linksArray,
+              tableElements: tableElements,
+              isUser: links.isUser,
+              formProps: props
+            }}/>
             <Button onClick={() => setTableElements(issues)}>Add elements to table</Button>
         </>
     );
