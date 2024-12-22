@@ -1,5 +1,6 @@
 import { Button, Checkbox, Group, Textarea, TextInput, NativeSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { Issue } from './CreateTable';
 
 export interface FormProps {
   inputs: {
@@ -23,19 +24,19 @@ export interface FormProps {
   closeOnSubmit?: () => void;
 }
 
-function CreateForm({props} : {props: FormProps}) {
+function CreateForm({props, addTableElements} : {props: FormProps, addTableElements: (newValue: Issue) => void}) {
   const form = useForm({
     mode: 'uncontrolled',
   });
 
   return (
     <form onSubmit={form.onSubmit((values) => {
-      console.log(values);
+      addTableElements(values as Issue);
       if (props.closeOnSubmit) props.closeOnSubmit();
     })}>
       {props.inputs.map((input) => (
         <TextInput
-          variant='filled'
+          variant='filled'  
           withAsterisk
           label={input.label}
           placeholder={input.placeholder}

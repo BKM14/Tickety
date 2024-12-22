@@ -1,7 +1,5 @@
 import { HeaderProps } from "../packages/components/HeaderSimple";
 import { FormProps } from "../packages/components/CreateForm";
-import { Button } from "@mantine/core";
-import { useState } from "react";
 import { Issue } from "../packages/components/CreateTable";
 import Dashboard from "../packages/components/Dashbord";
 
@@ -99,14 +97,10 @@ const UserDash = () => {
           urgencyType: "Medium",
         },
       ];
-      
-
-    const [, setModalOpened] = useState(false);
-    const [tableElements, setTableElements] = useState<Issue[]>([]);
 
     const links: HeaderProps = {
       linksArray: [
-        { link: "#", label: "Create Ticket", onClick: () => setModalOpened(true)}
+        { link: "#", label: "Create Ticket"}
       ],
       isUser: true
     }
@@ -127,18 +121,16 @@ const UserDash = () => {
         ],
         checkbox: false,
         submitLabel: "Submit Ticket",
-        closeOnSubmit: () => setModalOpened(false)
     }
 
     return (
         <>
             <Dashboard DashboardProps={{
               navLinks: links.linksArray,
-              tableElements: tableElements,
+              tableElements: issues,
               isUser: links.isUser,
-              formProps: props
+              formProps: props,
             }}/>
-            <Button onClick={() => setTableElements(issues)}>Add elements to table</Button>
         </>
     );
   };
