@@ -1,39 +1,30 @@
 import { Table, Select } from '@mantine/core';
-import { useState } from 'react';
 
 export interface Issue {
     email: string,
-    issueDescription: string,
-    issueTitle: string,
+    description: string,
+    title: string,
     issueType: string,
     name: string,
     urgencyType: string,
-    status?: string
+    status?: string,
+    id?:number
 }
 
-function CreateTable({ issues, isAdmin } : { issues: Issue[], isAdmin: boolean }) {
-
-  const [issuesState, setIssuesState] = useState(issues);
-
-  const handleStatusChange = (value: string , index: number) => {
-    const updatedIssues = [...issuesState];
-    updatedIssues[index]['status'] = value;
-    setIssuesState(updatedIssues);
-  }
+function CreateTable({ issues, isAdmin, updateState } : { issues: Issue[], isAdmin: boolean, updateState: (index: number, newState: Issue['status']) => void}) {
 
   const rows = issues.map((issue, index) => (
-    <Table.Tr key={issue.name}>
+    <Table.Tr key={index}>
       {/* <Table.Td>{issue.email}</Table.Td> */}
-      <Table.Td>{issue.issueTitle}</Table.Td>
-      <Table.Td>{issue.issueDescription}</Table.Td>
+      <Table.Td>{issue.title}</Table.Td>
+      <Table.Td>{issue.description}</Table.Td>
       {isAdmin ? (<Table.Td>
          <Select
           data={["Open",  "In Progress",  "Resolved", "Closed"]} 
           defaultValue={issue.status || "Open"}
           placeholder='Status of Ticket'
           onChange={(value) => {
-            handleStatusChange(value ? value : "Open", index);
-            console.log(issuesState);
+            updateState(index, value ||  "Open");
           }}
         /> 
       </Table.Td>) : (<Table.Td>{issue.status ? issue.status : "Open"}</Table.Td>)} 

@@ -4,12 +4,10 @@ from rest_framework.decorators import action
 from rest_framework import status
 from tickets.models import Ticket, Admin, Agent
 from tickets.serializers import TicketSerializer, AdminSerializer, AgentSerializer
-from rest_framework.permissions import IsAuthenticated
 
 class TicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    permission_classes = [IsAuthenticated]  
 
     @action(detail=True, methods=['post'])
     def assign_agent(self, request, pk=None):
@@ -33,20 +31,23 @@ class TicketViewSet(viewsets.ModelViewSet):
 
         return Response(TicketSerializer(ticket).data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'])
-    def change_status(self, request, pk=None):
+    @action(detail=True, methods=['put'])
+    def change_status(self, request, pk=id):
         ticket = self.get_object()
 
-        try:
-            admin = Admin.objects.get(user=request.user)
-        except Admin.DoesNotExist:
-            return Response({"detail": "You do not have permission to change ticket status."}, status=status.HTTP_403_FORBIDDEN)
+        # try:
+        #     admin = Admin.objects.get(user=request.user)
+        # except Admin.DoesNotExist:
+        #     return Response({"detail": "You do not have permission to change ticket status."}, status=status.HTTP_403_FORBIDDEN)
 
         new_status = request.data.get("status")
         if new_status not in ['Open', 'Resolved', 'Closed', 'In Progress']:
             return Response({"detail": "Invalid status value."}, status=status.HTTP_400_BAD_REQUEST)
 
-        admin.change_ticket_status(ticket, new_status)
+        # admin.change_ticket_status(ticket, new_status)
+
+        ticket.status = new_status;
+        ticket.save()
 
         return Response(TicketSerializer(ticket).data, status=status.HTTP_200_OK)
 

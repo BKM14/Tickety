@@ -33,7 +33,7 @@ class Ticket(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
     issueType = models.CharField(choices=ISSUE_TYPE, max_length=30, default='Bug')
     urgencyType = models.CharField(choices=URGENCY_TYPE, max_length=30, default='Low')
-    user = models.ForeignKey(User, related_name='tickets', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, related_name='tickets', on_delete=models.CASCADE)
     agent = models.ForeignKey('Agent', related_name='assigned_tickets', null=True, blank=True, on_delete=models.SET_NULL)
     assigned_by = models.ForeignKey('Admin', related_name='assigned_tickets', null=True, blank=True, on_delete=models.SET_NULL)
 
