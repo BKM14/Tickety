@@ -3,6 +3,7 @@ import CreateTable, { Issue } from "./CreateTable"
 import { HeaderProps, HeaderSimple } from "./HeaderSimple"
 import { Modal } from "@mantine/core";
 import CreateForm, { FormProps } from "./CreateForm";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardPropsInterface {
     navLinks?: HeaderProps['linksArray'],
@@ -14,14 +15,21 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
     
     const [modalOpened, setModalOpened] = useState(false);
     const [tableElements, setTableElements] = useState<Issue[]>([]);
+    const navigate = useNavigate();
 
     const addTableElements = async (newElement: Issue) => {
+
+        const authToken = localStorage.getItem("authToken");
+
+        if (!authToken) navigate("/");
+
         const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/`,{
             method: "POST",
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
+               'Authorization': `Bearer ${authToken}`
             },
-            body: JSON.stringify({...newElement, "user": 123})
+            body: JSON.stringify(newElement)
         })
 
         if (!response.ok) throw new Error(`Error creating new ticket: ${response.statusText}`);
@@ -32,11 +40,15 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
     const updateElementState = async(index: number, newState: Issue['status']) => {
 
         const ticketId = tableElements[index].id;
+        const authToken = localStorage.getItem("authToken");
+
+        if (!authToken) navigate("/");
 
         const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/${ticketId}/change_status/`, {
             method: "PUT",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
             },
             body: JSON.stringify({status: newState})
         })
@@ -44,16 +56,21 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
         if (!response.ok) {
             throw new Error(`Error updating ticket status: ${response.statusText}`);
         }
-    
-        const updatedTicket = await response.json();
-        console.log("Updated Ticket:", updatedTicket);
     }
 
     useEffect(() => {
+
+        const authToken = localStorage.getItem("authToken");
+
+        if (!authToken) navigate("/");
+
         const fetchDataFromDB = async () => {
-          const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/`, {
-            method: "GET"
-          })
+          const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/${DashboardProps.isUser ? 'user/user-tickets' : 'admin/'}`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+          });
           
           if (!response.ok) throw new Error(`Failed to fetch : ${response.statusText}`)
           return await response.json();

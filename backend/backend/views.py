@@ -12,7 +12,7 @@ class AdminTicketViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
 
     @action(detail=True, methods=['post'])
-    def assign_agent(self, request, pk=None):
+    def assign_agent(self, request, pk=None, url_path='assign-agent'):
         ticket = self.get_object()
         
         if ticket.status == 'closed':
@@ -35,7 +35,7 @@ class AdminTicketViewSet(viewsets.ModelViewSet):
         return Response(TicketSerializer(ticket).data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['put'])
-    def change_status(self, request, pk=None):
+    def change_status(self, request, pk=None, url_path='change-status'):
         ticket = self.get_object()
 
         new_status = request.data.get("status")

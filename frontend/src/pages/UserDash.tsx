@@ -1,12 +1,20 @@
 import { HeaderProps } from "../packages/components/HeaderSimple";
 import { FormProps } from "../packages/components/CreateForm";
 import Dashboard from "../packages/components/Dashbord";
+import { useNavigate } from "react-router-dom";
 
 const UserDash = () => {
 
+    const navigate = useNavigate();
+
     const links: HeaderProps = {
       linksArray: [
-        { link: "#", label: "Create Ticket"}
+        { link: "#", label: "Create Ticket"},
+        { label: "Logout", link: "#", onClick: () => {
+          localStorage.removeItem("authToken");
+          navigate("/")
+          alert("Logged out succesfully")
+        }}
       ],
       isUser: true
     }
