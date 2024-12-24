@@ -5,7 +5,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'name', 'email'
+            'id', 'name', 'email', 'password', 'username'
         ]
 
 class TicketSerializer(serializers.ModelSerializer):

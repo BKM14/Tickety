@@ -1,4 +1,4 @@
-import { Button, Checkbox, Group, Textarea, TextInput, NativeSelect } from '@mantine/core';
+import { Button, Group, Textarea, TextInput, NativeSelect } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Issue } from './CreateTable';
 
@@ -67,13 +67,6 @@ function CreateForm({props, addTableElements} : {props: FormProps, addTableEleme
           {...form.getInputProps(select.key)}
         />
       ))}
-
-      {props.checkbox && <Checkbox
-        mt="md"
-        label="I agree to sell my privacy"
-        key={form.key('termsOfService')}
-        {...form.getInputProps('termsOfService', { type: 'checkbox' })}
-      />}
 
       <Group justify="center" mt="md">
         <Button type="submit">{props.submitLabel}</Button>
