@@ -16,7 +16,7 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
     const [tableElements, setTableElements] = useState<Issue[]>([]);
 
     const addTableElements = async (newElement: Issue) => {
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}api/tickets/`,{
+        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/`,{
             method: "POST",
             headers: {
                'Content-Type': 'application/json'
@@ -33,7 +33,7 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
 
         const ticketId = tableElements[index].id;
 
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}api/tickets/${ticketId}/change_status/`, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/${ticketId}/change_status/`, {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json'
@@ -51,7 +51,7 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
 
     useEffect(() => {
         const fetchDataFromDB = async () => {
-          const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}api/tickets/`, {
+          const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/`, {
             method: "GET"
           })
           
