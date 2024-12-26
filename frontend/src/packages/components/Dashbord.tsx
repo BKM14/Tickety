@@ -23,7 +23,7 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
 
         if (!authToken) navigate("/");
 
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/`,{
+        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/user/create-ticket/`,{
             method: "POST",
             headers: {
                'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
 
         if (!authToken) navigate("/");
 
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/tickets/${ticketId}/change_status/`, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/admin/${ticketId}/change_status/`, {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',

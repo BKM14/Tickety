@@ -4,7 +4,9 @@ from rest_framework import status, viewsets
 from tickets.models import Ticket, Admin, Agent
 from tickets.serializers import TicketSerializer, AdminSerializer, AgentSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
 from .permissions import IsAdminUser
+import json
 
 class AdminTicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
@@ -12,7 +14,7 @@ class AdminTicketViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
 
     @action(detail=True, methods=['post'])
-    def assign_agent(self, request, pk=None, url_path='assign-agent'):
+    def assign_agent(self, request, pk=None):
         ticket = self.get_object()
         
         if ticket.status == 'closed':
@@ -35,7 +37,7 @@ class AdminTicketViewSet(viewsets.ModelViewSet):
         return Response(TicketSerializer(ticket).data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['put'])
-    def change_status(self, request, pk=None, url_path='change-status'):
+    def change_status(self, request, pk=None):
         ticket = self.get_object()
 
         new_status = request.data.get("status")
@@ -47,6 +49,7 @@ class AdminTicketViewSet(viewsets.ModelViewSet):
 
         return Response(TicketSerializer(ticket).data, status=status.HTTP_200_OK)
 
+
 class UserTicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
@@ -54,10 +57,21 @@ class UserTicketViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='user-tickets')
     def user_tickets(self, request):
-        print(request.user)
         tickets = Ticket.objects.filter(user=request.user)
         serializer = TicketSerializer(tickets, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['post'], url_path='create-ticket')
+    def create_ticket(self, request):
+        data = json.loads(request.body.decode("utf-8"))
+        ticket = Ticket.objects.create(
+            title = data['title'], description = data['description'], 
+            name = data['name'], email = data['email'], 
+            urgencyType = data['urgencyType'], issueType = data['issueType'],
+            user=request.user
+        )
+        ticket.save()
+        return Response(status=status.HTTP_200_OK)
 
 class AdminViewSet(viewsets.ModelViewSet):
     queryset = Admin.objects.all()
