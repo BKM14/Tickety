@@ -9,8 +9,9 @@ import {
     TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { upperFirst, useToggle } from '@mantine/hooks';
+import { upperFirst, useDisclosure, useToggle } from '@mantine/hooks';
 import { useNavigate } from 'react-router-dom';
+
   
   export function AuthenticationForm(props: PaperProps) {
     const [type, ] = useToggle(['login', 'register']);
@@ -21,28 +22,31 @@ import { useNavigate } from 'react-router-dom';
       },
     });
 
+    const [loading, handlers] = useDisclosure();
+
     const navigate = useNavigate();
 
     const handleLogin = async ({username, password}: {username: string, password: string}) => {
-      const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/token/`, {
-        method: "POST",
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body: JSON.stringify({username, password})
-      })
+      handlers.open();
+      try{
+        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/token/`, {
+          method: "POST",
+          headers: {
+            'Content-Type': "application/json"
+          },
+          body: JSON.stringify({username, password})
+        })
+        const { access } : {access: string} = await response.json();
+        if (!access) throw new Error("Error getting token: " + response.status);
 
-      if (!response.ok) {
+        localStorage.setItem("authToken", access);
+
+        navigate("/user");
+      } catch(e) {
+        handlers.close();
         alert("Error logging in to your account. Please check logs.");
-        throw new Error("Error during login: " + response.status);
+        throw new Error("Error during login: " + e);
       }
-
-      const { access } : {access: string} = await response.json();
-      if (!access) throw new Error("Error getting token: " + response.status);
-
-      localStorage.setItem("authToken", access);
-
-      navigate("/user");
     }
   
     return (
@@ -83,7 +87,7 @@ import { useNavigate } from 'react-router-dom';
           </Stack>
   
           <Group justify="space-between" mt="lg">
-            <Button type="submit" radius="xl" fullWidth>
+            <Button type="submit" radius="xl" fullWidth loading={loading} loaderProps={{type: 'dots'}}>
               {upperFirst(type)}
             </Button>
           </Group>
