@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
     "*"
 ]
 
+AUTH_USER_MODEL = 'tickets.CustomUser'
 
 # Application definition
 
@@ -161,5 +162,6 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': 'your_secret_key',
-    'VERIFYING_KEY': None
+    'VERIFYING_KEY': None,
+    'USER_ID_FIELD': "email"
 }

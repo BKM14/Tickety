@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom';
     const [type, ] = useToggle(['login', 'register']);
     const form = useForm({
       initialValues: {
-        username: '',
+        email: '',
         password: '',
       },
     });
@@ -26,7 +26,7 @@ import { useNavigate } from 'react-router-dom';
 
     const navigate = useNavigate();
 
-    const handleLogin = async ({username, password}: {username: string, password: string}) => {
+    const handleLogin = async ({email, password}: {email: string, password: string}) => {
       handlers.open();
       try{
         const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/token/`, {
@@ -34,7 +34,7 @@ import { useNavigate } from 'react-router-dom';
           headers: {
             'Content-Type': "application/json"
           },
-          body: JSON.stringify({username, password})
+          body: JSON.stringify({email, password})
         })
         const { access } : {access: string} = await response.json();
         if (!access) throw new Error("Error getting token: " + response.status);
@@ -62,16 +62,16 @@ import { useNavigate } from 'react-router-dom';
         </Text>
 
   
-        <form onSubmit={form.onSubmit(({username, password}) => {handleLogin({username, password})})}>
+        <form onSubmit={form.onSubmit(({email, password}) => {handleLogin({email, password})})}>
           <Stack>
   
             <TextInput
               required
-              label="Username"
-              placeholder="john.doe"
-              value={form.values.username}
-              onChange={(event) => form.setFieldValue('username', event.currentTarget.value)}
-              error={form.errors.username && 'Invalid username'}
+              label="Email"
+              placeholder="john.doe@gmail.com"
+              value={form.values.email}
+              onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
+              error={form.errors.email && 'Invalid email'}
               radius="md"
             />
   

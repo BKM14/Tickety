@@ -3,10 +3,14 @@ from rest_framework.decorators import action, permission_classes
 from rest_framework import status, viewsets
 from tickets.models import Ticket, Admin, Agent
 from tickets.serializers import TicketSerializer, AdminSerializer, AgentSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
-from .permissions import IsAdminUser
+from .permissions import IsAdminUser, IsAgentUser
+from tickets.serializers import CustomTokenObtainPairSerializer 
 import json
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
 
 class AdminTicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
@@ -80,3 +84,8 @@ class AdminViewSet(viewsets.ModelViewSet):
 class AgentViewSet(viewsets.ModelViewSet):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
+    permission_classes=[IsAgentUser]
+
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
