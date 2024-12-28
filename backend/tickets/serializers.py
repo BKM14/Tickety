@@ -7,16 +7,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = [
-            'first_name', 'last_name', 'email', 'password', 'username'
+            'first_name', 'last_name', 'email'
         ]
 
 class TicketSerializer(serializers.ModelSerializer):
+
+    agent_email = serializers.CharField(source='agent.user.email', read_only=True)
     class Meta:
         model = Ticket
         fields = [
             'id', 'title', 'description',   
             'status', 'created_at', 'updated_at', 
-            'issueType', 'urgencyType', 'user', 'agent',
+            'issueType', 'urgencyType', 'user', 'agent_email',
             'assigned_by'
         ]
 
@@ -42,7 +44,6 @@ class EmailTokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        print(email, password)
 
         user = CustomUser.objects.get(email=email)
         if user and user.check_password(password):

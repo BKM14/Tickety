@@ -9,7 +9,7 @@ export interface HeaderProps  {
       label: string,
       onClick?: () => void,
     }[],
-    isUser: boolean
+    user: "user" | "admin" | "agent"
 }
 
 export function HeaderSimple({ links }: {links: HeaderProps}) {

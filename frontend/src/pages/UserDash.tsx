@@ -16,14 +16,12 @@ const UserDash = () => {
           alert("Logged out succesfully")
         }}
       ],
-      isUser: true
+      user: "user"
     }
     ;
 
     const props: FormProps = {
-        inputs: [
-            {label: "Name", placeholder: "John Doe", key: "name"},
-            {label: "Email", placeholder: "john@gmail.com", key: "email"},
+        inputs: [ 
             {label: "Title", placeholder: "Summarize the issue", key: "title"},
         ],
         textareas: [
@@ -41,7 +39,7 @@ const UserDash = () => {
         <>
           <Dashboard DashboardProps={{
             navLinks: links.linksArray,
-            isUser: links.isUser,
+            user: links.user,
             formProps: props,
           }}/>
         </>

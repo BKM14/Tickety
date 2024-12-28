@@ -8,32 +8,40 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Creating users...'))
 
         user1 = CustomUser.objects.create_user(
-        email='john.doe@example.com',
-        password='password123'
+            email='john.doe@example.com',
         )
+        user1.set_password('password123')
 
         user2 = CustomUser.objects.create_user(
-        email='mary.jane@example.com',
-        password='password123'
+            email='mary.jane@example.com',
         )
+        user2.set_password('password123')
+
 
         user1.save()
         user2.save()
         
         admin_user = CustomUser.objects.create(
             email="admin@example.com",
-            password='adminpassword'
         )
+        admin_user.set_password('adminpassword')
+        admin_user.is_superuser = True
+        admin_user.is_staff = True
+        admin_user.is_admin = True
+        admin_user.save()
         
         admin = Admin.objects.create(user=admin_user)
         admin.is_superuser = True
         admin.is_staff = True
+        admin.is_admin = True
         admin.save()
         
         agent_user = CustomUser.objects.create(
             email="agent@example.com",
-            password='agentpassword'
         )
+        agent_user.set_password("agent_password")
+        agent_user.is_staff = True
+        agent_user.save()
         
         agent = Agent.objects.create(user=agent_user, department="Support")
         agent.is_staff = True
@@ -50,7 +58,7 @@ class Command(BaseCommand):
         )
         
         ticket2 = Ticket.objects.create(
-            title="Feature request",
+            title="Dark Mode",
             description="Request to add a dark mode feature.",
             urgencyType="Medium",
             issueType="Feature Request",

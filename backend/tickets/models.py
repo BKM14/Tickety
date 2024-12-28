@@ -90,7 +90,7 @@ class Admin(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
     
     def assign_ticket(self, ticket, agent):
         if ticket.status != 'closed': 
@@ -108,4 +108,4 @@ class Agent(models.Model):
     department = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return self.user.username
+        return self.user.email

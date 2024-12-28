@@ -15,9 +15,9 @@ CustomUser = get_user_model()
 class AdminTicketViewSet(viewsets.ModelViewSet):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['put'])
     def assign_agent(self, request, pk=None):
         ticket = self.get_object()
         
@@ -32,7 +32,7 @@ class AdminTicketViewSet(viewsets.ModelViewSet):
         agent_id = request.data.get("agent_id")
 
         try:
-            agent = Agent.objects.get(id=agent_id)
+            agent = Agent.objects.get(user_id=agent_id)
         except Agent.DoesNotExist:
             return Response({"detail": "Agent not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -69,8 +69,7 @@ class UserTicketViewSet(viewsets.ModelViewSet):
     def create_ticket(self, request):
         data = json.loads(request.body.decode("utf-8"))
         ticket = Ticket.objects.create(
-            title = data['title'], description = data['description'], 
-            name = data['name'], email = data['email'], 
+            title = data['title'], description = data['description'],  
             urgencyType = data['urgencyType'], issueType = data['issueType'],
             user=request.user
         )
@@ -80,11 +79,17 @@ class UserTicketViewSet(viewsets.ModelViewSet):
 class AdminViewSet(viewsets.ModelViewSet):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
 class AgentViewSet(viewsets.ModelViewSet):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
-    permission_classes=[IsAgentUser]
+    permission_classes=[IsAuthenticated, IsAgentUser]
+
+    def list(self, request):
+        agents = self.get_queryset()
+        emails = [{'email': agent.user.email} for agent in agents]
+        return Response(emails)
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):

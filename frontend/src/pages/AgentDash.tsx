@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import Dashboard from "../packages/components/Dashbord";
 
-const  AdminDash = () => {
+const  AgentDash = () => {
 
     const navigate = useNavigate();
 
 return <>
-    <Dashboard DashboardProps={{user: "admin", navLinks: [
+    <Dashboard DashboardProps={{user: "agent", navLinks: [
          {label: "Logout", link: "#", onClick: () => {
             localStorage.removeItem("authToken");
             navigate("/")
@@ -16,4 +16,4 @@ return <>
 </>
 }
 
-export default AdminDash
+export default AgentDash

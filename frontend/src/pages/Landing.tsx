@@ -6,7 +6,7 @@ const Landing = () => {
         <div>
             <HeaderSimple links={{
                     linksArray: [],
-                    isUser: false
+                    user: "admin"
                 }} 
             />
         </div>
