@@ -11,6 +11,7 @@ import {
 import { useForm } from '@mantine/form';
 import { upperFirst, useDisclosure, useToggle } from '@mantine/hooks';
 import { useNavigate } from 'react-router-dom';
+import { post } from '../../api';
 
   
   export function AuthenticationForm(props: PaperProps) {
@@ -28,27 +29,22 @@ import { useNavigate } from 'react-router-dom';
 
     const handleLogin = async ({email, password}: {email: string, password: string}) => {
       handlers.open();
-      try{
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/token/`, {
-          method: "POST",
-          headers: {
-            'Content-Type': "application/json"
-          },
-          body: JSON.stringify({email, password})
-        })
-        const { access } : {access: string} = await response.json();
-        if (!access) throw new Error("Error getting token: " + response.status);
+      const response: {
+        access: string,
+        refresh: string
+      } = await post({
+        url: "/api/token/", 
+        payload: {email, password},
+        customHeaders: null,
+        customErrorMessage: "Error getting token",
+        errorCleanup: () => handlers.close()
+      })
 
-        localStorage.setItem("authToken", access);
+      localStorage.setItem("authToken", response.access);
 
-        navigate("/user");
-      } catch(e) {
-        handlers.close();
-        alert("Error logging in to your account. Please check logs.");
-        throw new Error("Error during login: " + e);
-      }
+      navigate("/user");
     }
-  
+    
     return (
       <Paper radius="md" p="xl" withBorder {...props}>
         <div className='flex justify-center my-3'>
