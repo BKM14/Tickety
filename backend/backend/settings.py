@@ -161,7 +161,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your_secret_key',
+    'SIGNING_KEY': os.getenv("JWT_SIGNING_KEY"),
     'VERIFYING_KEY': None,
     'USER_ID_FIELD': "email"
 }

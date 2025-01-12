@@ -19,7 +19,7 @@ class TicketSerializer(serializers.ModelSerializer):
             'id', 'title', 'description',   
             'status', 'created_at', 'updated_at', 
             'issueType', 'urgencyType', 'user', 'agent_email',
-            'assigned_by'
+            'assigned_by', 'screenshot_links'
         ]
 
 class AdminSerializer(serializers.ModelSerializer):
