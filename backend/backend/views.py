@@ -71,10 +71,10 @@ class UserTicketViewSet(viewsets.ModelViewSet):
         ticket = Ticket.objects.create(
             title = data['title'], description = data['description'],  
             urgencyType = data['urgencyType'], issueType = data['issueType'],
-            user=request.user
+            user=request.user, screenshot_links = data['screenshot_links']
         )
         ticket.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(TicketSerializer(ticket).data, status=status.HTTP_200_OK)
 
 class AdminViewSet(viewsets.ModelViewSet):
     queryset = Admin.objects.all()

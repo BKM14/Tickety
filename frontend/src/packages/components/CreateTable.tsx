@@ -1,4 +1,5 @@
-import { Table, Select } from '@mantine/core';
+import { Table, Select, Modal, Button, Image } from '@mantine/core';
+import { useState } from 'react';
 
 export interface Issue {
     description: string,
@@ -8,7 +9,8 @@ export interface Issue {
     status?: string,
     id?:number,
     user: string,
-    agent_email?: string
+    agent_email?: string,
+    screenshot_links?: string[]
 }
 
 interface TableProps {
@@ -21,10 +23,32 @@ interface TableProps {
 
 function CreateTable({ issues, user, updateState, ticketStatusOptions, agents } : TableProps) {
 
+  const [openedModalIndex, setOpenedModalIndex] = useState<number | null>(null);  
+  const open = (index: number) => {
+    setOpenedModalIndex(index);
+  }
+  const close = () => setOpenedModalIndex(null)
+
   const rows = issues.map((issue, index) => (
     <Table.Tr key={index}>
       <Table.Td>{issue.title}</Table.Td>
       <Table.Td>{issue.description}</Table.Td>
+      <Table.Td>
+        {issue.screenshot_links && issue.screenshot_links.length > 0 ? (
+          <>
+          <Modal opened={openedModalIndex === index} onClose={close} title="Issues">
+            {issue.screenshot_links.map((screenshot, index) => (
+              <Image radius={"sm"} p={2} src={screenshot} key={index}/>
+            ))}
+          </Modal>
+          <Button variant="default" onClick={() => open(index)}>
+          View screenshots
+          </Button>
+          </>
+        ): (
+          <div className='text-center'>NA</div>
+        )}
+      </Table.Td>
       {user === "admin" ? (
         <>
         <Table.Td>
@@ -68,6 +92,7 @@ function CreateTable({ issues, user, updateState, ticketStatusOptions, agents } 
         <Table.Tr>
           <Table.Th>Issue Title</Table.Th>
           <Table.Th>Issue Description</Table.Th>
+          <Table.Th>Issue Screenshots</Table.Th>
           <Table.Th>Status</Table.Th>
           <Table.Th>Agent Assigned</Table.Th>
           {user != "user" && (

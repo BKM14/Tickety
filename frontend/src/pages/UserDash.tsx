@@ -33,6 +33,16 @@ const UserDash = () => {
         ],
         checkbox: false,
         submitLabel: "Submit Ticket",
+        fileInputs: [
+          {
+            key: "screenshot_links",
+            label: "Screenshots",
+            description: "Attach a screenshot of the issue",
+            placeholder: "Click to select",
+            accept: "image/png, image/jpeg",
+            multiple: true
+          }
+        ]
     }
 
     return (
