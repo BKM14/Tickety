@@ -4,6 +4,7 @@ import { HeaderProps, HeaderSimple } from "./HeaderSimple"
 import { Modal } from "@mantine/core";
 import CreateForm, { FormProps } from "./CreateForm";
 import { useNavigate } from "react-router-dom";
+import { get, post, put } from "../../api";
 
 interface DashboardPropsInterface {
     navLinks?: HeaderProps['linksArray'],
@@ -25,17 +26,14 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
         const authToken = localStorage.getItem("authToken");
 
         if (!authToken) navigate("/");
-
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/user/create-ticket/`,{
-            method: "POST",
-            headers: {
-               'Content-Type': 'application/json',
-               'Authorization': `Bearer ${authToken}`
+        await post({
+            url: "/api/user/create-ticket/",
+            payload: newElement,
+            customHeaders: {
+                "Authorization": `Bearer ${authToken}`
             },
-            body: JSON.stringify(newElement)
+            customErrorMessage: "Error creating new ticket"
         })
-
-        if (!response.ok) throw new Error(`Error creating new ticket: ${response.statusText}`);
 
         setTableElements(tableElements => [...tableElements, newElement])
     }
@@ -47,18 +45,14 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
 
         if (!authToken) navigate("/");
 
-        const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/admin/${ticketId}/${agent_id ? "assign_agent" : "change_status"}/`, {
-            method: "PUT",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`
+        await put({
+            url: `/api/admin/${ticketId}/${agent_id ? "assign_agent/" : "change_status/"}`,
+            customHeaders: {
+                 'Authorization': `Bearer ${authToken}`
             },
-            body: JSON.stringify(agent_id ? {agent_id} : {status: newState})
+            customErrorMessage: "Error updating ticket status",
+            payload: agent_id ? {agent_id} : {status: newState}
         })
-
-        if (!response.ok) {
-            throw new Error(`Error updating ticket status: ${response.statusText}`);
-        }
     }
 
     useEffect(() => {
@@ -67,32 +61,25 @@ const Dashboard = ({DashboardProps}: {DashboardProps: DashboardPropsInterface}) 
 
         if (!authToken) navigate("/");
 
-        const fetchDataFromDB = async () => {
-          const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/${DashboardProps.user === "user" ? 'user/user-tickets/' : DashboardProps.user === "admin" ? "admin/" : "agents"}`, {
-            method: "GET",
-            headers: {
+        const fetchDataFromDB = async () => await get({
+            url: `/api/${DashboardProps.user === "user" ? 'user/user-tickets/' : DashboardProps.user === "admin" ? "admin/" : "agents/"}`,
+            customHeaders: {
                 'Authorization': `Bearer ${authToken}`
-            }
-          });
-          
-          if (!response.ok) throw new Error(`Failed to fetch : ${response.statusText}`)
-          return await response.json();
-        }
+            },
+            customErrorMessage: "Failed to fetch tickets"
+        })
+
+        fetchDataFromDB().then((data: Issue[]) => setTableElements(data))
   
-        fetchDataFromDB().then((data) => setTableElements(data));
-
         if (DashboardProps.user === "admin") {
-            const getAgents = async () => {
-                const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/api/agents/`, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${authToken}`
-                    }
-                })
 
-                if (!response.ok) throw new Error(`Failed to fetch : ${response.statusText}`)
-                return await response.json();
-            }
+            const getAgents = async () => await get({
+                url: "/api/agents/",
+                customHeaders: {
+                    "Authorization": `Bearer ${authToken}`
+                },
+                customErrorMessage: "Error fetching agents"
+            })
 
             getAgents().then((data) => {
                 setAgents((agents) => [...agents, ...data.map((agent: {email: string}) => agent.email)]);
